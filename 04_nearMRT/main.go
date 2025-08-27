@@ -1,12 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
 	"onemaptry/auth"
+	"onemaptry/body"
 	"os"
 
 	"github.com/siuyin/dflt"
@@ -49,18 +47,5 @@ func search(lat, lng, rad string) ([]byte, error) {
 
 	defer resp.Body.Close()
 	//fmt.Println(resp.Status)
-	if resp.StatusCode == http.StatusUnauthorized {
-		return []byte{}, fmt.Errorf("unauthorized")
-	}
-
-	dat, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return []byte{}, fmt.Errorf("readall: %v", err)
-	}
-
-	if bytes.Contains(dat, []byte("error")) {
-		return []byte{}, fmt.Errorf("unauthorized")
-	}
-
-	return dat, nil
+	return body.Read(resp)
 }

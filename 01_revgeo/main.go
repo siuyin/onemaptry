@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"log"
-	"net/http"
 	"onemaptry/auth"
+	"onemaptry/body"
 	"os"
 
 	"github.com/siuyin/dflt"
@@ -44,14 +43,5 @@ func reverse_geocode(loc string) ([]byte, error) {
 	}
 
 	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusUnauthorized {
-		return []byte{}, fmt.Errorf("unauthorized")
-	}
-
-	dat, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return []byte{}, fmt.Errorf("readall: %v", err)
-	}
-
-	return dat, nil
+	return body.Read(resp)
 }
