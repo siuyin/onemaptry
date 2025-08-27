@@ -69,11 +69,11 @@ func creds() *bytes.Buffer {
 	return &buf
 }
 
-// Request makes an authenticated request by adding Autorization: Bearer <token> header.
-func Request(method string, url string, body io.ReadCloser) (*http.Response, error) {
+// Get makes an authenticated request by adding Autorization: Bearer <token> header.
+func Get(url string) (*http.Response, error) {
 	cl := &http.Client{}
 
-	req, err := http.NewRequest(method, url, body)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("new request: %v", err)
 	}

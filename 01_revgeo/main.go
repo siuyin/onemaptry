@@ -38,7 +38,7 @@ func main() {
 
 func reverse_geocode(loc string) ([]byte, error) {
 	url := baseURL + "/api/public/revgeocode?location=" + loc + "&buffer=20&addressType=All&otherFeatures=N"
-	resp, err := auth.Request("GET", url, nil)
+	resp, err := auth.Get(url)
 	if err != nil {
 		return []byte{}, fmt.Errorf("auth.request: %v")
 	}
