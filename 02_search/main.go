@@ -39,17 +39,10 @@ func main() {
 }
 
 func search(loc string) ([]byte, error) {
-	cl := &http.Client{}
-
-	req, err := http.NewRequest("GET", baseURL+"/api/common/elastic/search?searchVal="+loc+"&returnGeom=Y&getAddrDetails=Y&pageNum=1", nil)
+	url := baseURL + "/api/common/elastic/search?searchVal=" + loc + "&returnGeom=Y&getAddrDetails=Y&pageNum=1"
+	resp, err := auth.Request("GET", url, nil)
 	if err != nil {
-		return []byte{}, fmt.Errorf("new request: %v", err)
-	}
-
-	req.Header.Add("Authorization", "Bearer "+dflt.EnvString("TOKEN", "mytoken"))
-	resp, err := cl.Do(req)
-	if err != nil {
-		return []byte{}, fmt.Errorf("client do: %v", err)
+		return []byte{}, fmt.Errorf("auth request: %v", err)
 	}
 
 	defer resp.Body.Close()

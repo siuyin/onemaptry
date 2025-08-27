@@ -67,3 +67,21 @@ func creds() *bytes.Buffer {
 	}
 	return &buf
 }
+
+func Request(method string, url string, body io.ReadCloser) (*http.Response, error) {
+	cl := &http.Client{}
+
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, fmt.Errorf("new request: %v", err)
+	}
+
+	req.Header.Add("Authorization", "Bearer "+dflt.EnvString("TOKEN", "mytoken"))
+	resp, err := cl.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("client do: %v", err)
+	}
+
+	return resp, nil
+
+}
