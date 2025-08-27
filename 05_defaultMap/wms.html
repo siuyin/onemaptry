@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>OneMap: Default Map (WMS)</title>
+    <link rel="stylesheet" href="https://www.onemap.gov.sg/web-assets/libs/leaflet/leaflet.css" />
+    <script src="https://www.onemap.gov.sg/web-assets/libs/leaflet/onemap-leaflet.js"></script>
+  </head>
+
+  <body>
+    <h1>Default Map (WMS)</h1>
+    <div id="mapview" style='height:800px;'></div>
+    <script>
+      let sw = L.latLng(1.144, 103.535);
+      let ne = L.latLng(1.494, 104.502);
+      let bounds = L.latLngBounds(sw, ne);
+
+      let map = L.map("mapview", {
+              center: L.latLng(1.2868108, 103.8545349),
+              zoom: 16
+            });
+
+      map.setMaxBounds(bounds);
+
+      let layer = 'Default';
+
+      let basemap = L.tileLayer.wms("https://www.onemap.gov.sg/maps/service?", {
+              layers: layer,
+              format: "image/png",
+              version: "1.0.0",
+              WMTVER:  "1.0.0",
+              crs: L.CRS.EPSG4326,
+              maxZoom: 18,
+              minZoom: 11,
+              /** DO NOT REMOVE the OneMap attribution below **/
+              attribution: '<img src="https://www.onemap.gov.sg/web-assets/images/logo/om_logo.png" style="height:20px;width:20px;"/>&nbsp;<a href="https://www.onemap.gov.sg/" target="_blank" rel="noopener noreferrer">OneMap</a>&nbsp;&copy;&nbsp;contributors&nbsp;&#124;&nbsp;<a href="https://www.sla.gov.sg/" target="_blank" rel="noopener noreferrer">Singapore Land Authority</a>'
+            });
+
+      basemap.addTo(map);
+    </script>
+  </body>
+</html>
