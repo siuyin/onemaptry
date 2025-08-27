@@ -37,17 +37,10 @@ func main() {
 }
 
 func reverse_geocode(loc string) ([]byte, error) {
-	cl := &http.Client{}
-
-	req, err := http.NewRequest("GET", baseURL+"/api/public/revgeocode?location="+loc+"&buffer=20&addressType=All&otherFeatures=N", nil)
+	url := baseURL + "/api/public/revgeocode?location=" + loc + "&buffer=20&addressType=All&otherFeatures=N"
+	resp, err := auth.Request("GET", url, nil)
 	if err != nil {
-		return []byte{}, fmt.Errorf("new request: %v", err)
-	}
-
-	req.Header.Add("Authorization", "Bearer "+dflt.EnvString("TOKEN", "mytoken"))
-	resp, err := cl.Do(req)
-	if err != nil {
-		return []byte{}, fmt.Errorf("client do: %v", err)
+		return []byte{}, fmt.Errorf("auth.request: %v")
 	}
 
 	defer resp.Body.Close()
