@@ -23,6 +23,7 @@ type token struct {
 	Timestamp int    `json:"timestamp"`
 }
 
+// Token retrieve the same JWT if unexpired or a new JWT if expired.
 func Token() (string, error) {
 	cl := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
@@ -68,6 +69,7 @@ func creds() *bytes.Buffer {
 	return &buf
 }
 
+// Request makes an authenticated request by adding Autorization: Bearer <token> header.
 func Request(method string, url string, body io.ReadCloser) (*http.Response, error) {
 	cl := &http.Client{}
 
@@ -83,5 +85,4 @@ func Request(method string, url string, body io.ReadCloser) (*http.Response, err
 	}
 
 	return resp, nil
-
 }
