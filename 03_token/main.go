@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"log"
 	"onemaptry/auth"
-	"os"
-
-	"github.com/siuyin/dflt"
 )
 
 func main() {
@@ -15,6 +12,5 @@ func main() {
 		log.Fatal("auth.token: ", err)
 	}
 
-	os.Setenv("TOKEN", tok)
-	fmt.Println(dflt.EnvString("TOKEN", "my token"))
+	fmt.Println(tok)
 }

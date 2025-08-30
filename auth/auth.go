@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/siuyin/dflt"
+	bolt "go.etcd.io/bbolt"
 )
 
 const baseURL = "https://onemap.gov.sg"
@@ -57,6 +58,7 @@ func Token() (string, error) {
 	if err := json.Unmarshal(dat, &tok); err != nil {
 		return "", fmt.Errorf("unmarshal: %v", err)
 	}
+	put(tok.Token)
 	return tok.Token, nil
 }
 
@@ -78,11 +80,65 @@ func Get(url string) (*http.Response, error) {
 		return nil, fmt.Errorf("new request: %v", err)
 	}
 
-	req.Header.Add("Authorization", "Bearer "+dflt.EnvString("TOKEN", "mytoken"))
+	tok := get()
+	//log.Println("current token: ", tok)
+	req.Header.Add("Authorization", "Bearer "+tok)
 	resp, err := cl.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("client do: %v", err)
 	}
 
 	return resp, nil
+}
+
+var db *bolt.DB
+
+func init() {
+	initDB("db.secret")
+}
+
+func initDB(path string) {
+	var err error
+	db, err = bolt.Open(path, 0600, nil)
+	if err != nil {
+		log.Fatal("initDB: ", err)
+	}
+	db.Update(func(tx *bolt.Tx) error {
+		tx.CreateBucketIfNotExists([]byte("jwt"))
+		return nil
+	})
+}
+
+func put(val string) {
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("jwt"))
+
+		err := b.Put([]byte("token"), []byte(val))
+		if err != nil {
+			return fmt.Errorf("put token: %v", err)
+		}
+		return nil
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func get() string {
+	tok := ""
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("jwt"))
+		t := b.Get([]byte("token"))
+		if t == nil {
+			tok = ""
+			return nil
+		}
+		tok = string(t)
+		return nil
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return tok
 }

@@ -5,7 +5,6 @@ import (
 	"log"
 	"onemaptry/auth"
 	"onemaptry/body"
-	"os"
 
 	"github.com/siuyin/dflt"
 )
@@ -23,7 +22,7 @@ func main() {
 			}
 
 			log.Println("token refreshed")
-			os.Setenv("TOKEN", tok)
+			log.Println("new token: ", tok)
 			continue
 		}
 		if err != nil {
