@@ -1,30 +1,59 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/url"
 	"onemaptry/auth"
 	"onemaptry/body"
-	"os"
+	"time"
 
 	"github.com/siuyin/dflt"
 )
 
 const baseURL = "https://onemap.gov.sg"
 
+type result struct {
+	X   string
+	Y   string
+	Lat string `json:"LATITUDE"`
+	Lng string `json:"LONGITUDE"`
+}
+
+func (r result) String() string {
+	return fmt.Sprintf("(X,Y)=(%s,%s), LatLng=(%s,%s)", r.X, r.Y, r.Lat, r.Lng)
+}
+
+type resp struct {
+	Found   int      `json:"found"`
+	Results []result `json:"results"`
+}
+
 func main() {
 	loc := url.QueryEscape(dflt.EnvString("LOC", "revenue house"))
+	dat := retryOnUnauth(search, loc)
+	fmt.Printf("%s\n", dat)
+
+	var res resp
+	if err := json.Unmarshal(dat, &res); err != nil {
+		log.Fatal("unmarshall: ", err)
+	}
+
+	fmt.Printf("%s\n", res.Results)
+}
+
+func retryOnUnauth(fn func(string) ([]byte, error), loc string) []byte {
 	done := false
-	for dat, err := search(loc); !done; dat, err = search(loc) {
+	for dat, err := fn(loc); !done; dat, err = fn(loc) {
 		if err != nil && err.Error() == "unauthorized" {
-			tok, err := auth.Token()
+			_, err := auth.Token()
 			if err != nil {
 				log.Fatal("could not renew token: ", err)
 			}
 
 			log.Println("token refreshed")
-			os.Setenv("TOKEN", tok)
+			time.Sleep(1500 * time.Millisecond) // wait for new token to be registered in SLA's system
 			continue
 		}
 		if err != nil {
@@ -32,8 +61,9 @@ func main() {
 		}
 
 		done = true
-		fmt.Printf("%s\n", dat)
+		return dat
 	}
+	return []byte{}
 }
 
 func search(loc string) ([]byte, error) {
