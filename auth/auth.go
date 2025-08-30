@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/siuyin/dflt"
 	bolt "go.etcd.io/bbolt"
@@ -141,4 +142,49 @@ func get() string {
 	}
 
 	return tok
+}
+
+func RetryOnUnauthOld(fn func(string) ([]byte, error), loc string) []byte {
+	done := false
+	for dat, err := fn(loc); !done; dat, err = fn(loc) {
+		if err != nil && err.Error() == "unauthorized" {
+			_, err := Token()
+			if err != nil {
+				log.Fatal("could not renew token: ", err)
+			}
+
+			log.Println("token refreshed")
+			time.Sleep(1500 * time.Millisecond) // wait for new token to be registered in SLA's system
+			continue
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		done = true
+		return dat
+	}
+	return []byte{}
+}
+func RetryOnUnauth(fn func(...any) ([]byte, error), args ...any) []byte {
+	done := false
+	for dat, err := fn(args...); !done; dat, err = fn(args...) {
+		if err != nil && err.Error() == "unauthorized" {
+			_, err := Token()
+			if err != nil {
+				log.Fatal("could not renew token: ", err)
+			}
+
+			log.Println("token refreshed")
+			time.Sleep(1500 * time.Millisecond) // wait for new token to be registered in SLA's system
+			continue
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		done = true
+		return dat
+	}
+	return []byte{}
 }
