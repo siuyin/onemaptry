@@ -1,16 +1,18 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<title>OneMap: Default Map (XYZ)</title>
-		<link rel="stylesheet" href="https://www.onemap.gov.sg/web-assets/libs/leaflet/leaflet.css" />
-		<script src="https://www.onemap.gov.sg/web-assets/libs/leaflet/onemap-leaflet.js"></script>
-	</head>
+  <head>
+    <title>OneMap: Default Map (XYZ)</title>
+    <link rel="stylesheet" href="https://www.onemap.gov.sg/web-assets/libs/leaflet/leaflet.css" />
+    <script src="https://www.onemap.gov.sg/web-assets/libs/leaflet/onemap-leaflet.js"></script>
+  </head>
 
-	<body>
-		<div id='mapdiv' style='height:520px;'></div>
-		<script>
-			let sw = L.latLng(1.144, 103.535);
-			let ne = L.latLng(1.494, 104.502);
-			let bounds = L.latLngBounds(sw, ne);
+  <body>
+    <div id='mapdiv' style='height:520px;'></div>
+    <script src="sample-geojson.js" type="text/javascript"></script>
+    <script>
+      let sw = L.latLng(1.144, 103.535);
+      let ne = L.latLng(1.494, 104.502);
+      let bounds = L.latLngBounds(sw, ne);
 
 
       let ctr = L.latLng(1.3461151,103.773155);
@@ -55,9 +57,34 @@
       function placeRedicon(e) {
               L.marker(e.latlng,{icon: redicon})
                 .bindPopup(`${e.latlng.toString()}`)
-              .addTo(map)
+                .addTo(map)
             }
       map.on("click",placeRedicon)
+
+      var feat = {
+              "type": "FeatureCollection",
+              "features": [
+                      {
+                              "type": "Feature",
+                              "properties": {
+                                      "name": "shell station",
+                                      "marker-color": "#c92222",
+                                      "marker-size": "medium",
+                                      "marker-symbol": "circle"
+                                    },
+                              "geometry": {
+                                      "coordinates": [
+                                              103.77196572692446,
+                                              1.345963669080021
+                                            ],
+                                      "type": "Point"
+                                    },
+                              "id": 0
+                            }
+                    ]
+            }
+      L.geoJSON(feat).addTo(map)
+
     </script>
   </body>
 </html>
