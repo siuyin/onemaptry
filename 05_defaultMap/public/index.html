@@ -83,7 +83,12 @@
                             }
                     ]
             }
-      L.geoJSON(feat).addTo(map)
+      L.geoJSON(feat,{
+              pointToLayer: function (feature,latlng){
+                      return L.marker(latlng,{icon:redicon})
+                        .bindPopup(feature.properties.name)
+                    }
+            }).addTo(map)
 
     </script>
   </body>
