@@ -11,9 +11,9 @@ import (
 const baseURL = "https://onemap.gov.sg"
 
 func main() {
-	//disp(themes)
-	//disp(retrieve, "bicyclerack")
-	disp(retrieve, "family")
+	//fmt.Printf("%s\n", auth.RetryOnUnauth(themes))
+	//fmt.Printf("%s\n", auth.RetryOnUnauth(retrieve, "family"))
+	fmt.Printf("%s\n", auth.RetryOnUnauth(retrieve, "bicyclerack"))
 }
 
 func disp(fn func(p ...any) ([]byte, error), q ...any) {

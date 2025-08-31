@@ -44,7 +44,19 @@
 
             }
 
-      map.on("click",onMapClick)
+      //map.on("click",onMapClick)
+      let redicon = L.icon({
+              iconUrl: 'redmarker.png',
+              iconSize: [26,41],
+              iconAnchor: [13,40],
+              popupAnchor: [-3, -76]
+            })
+
+      function placeRedicon(e) {
+              L.marker(e.latlng,{icon: redicon})
+              .addTo(map)
+            }
+      map.on("click",placeRedicon)
     </script>
   </body>
 </html>
