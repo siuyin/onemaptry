@@ -1,0 +1,9 @@
+body {
+	font-family: sans-serif;
+}
+
+#maincontent {
+	display: flex;
+	gap: 8px;
+}
+
