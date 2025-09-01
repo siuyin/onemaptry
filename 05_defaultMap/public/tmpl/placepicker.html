@@ -16,6 +16,7 @@
       <div id="placeinputform">
         <h2>Place Picker</h2>
         <input type="text" 
+               name="searchInput"
                placeholder="search ..." 
                data-bind-search
                data-on-input="@get('/search')" />
@@ -23,86 +24,25 @@
       </div>
 
     </div>
-    <script id="mygeo">
-      var feat = {
-              "type": "FeatureCollection",
-              "features": [
-                      {
-                              "type": "Feature",
-                              "properties": {
-                                      "name": "shell station",
-                                      "marker-color": "#c92222",
-                                      "marker-size": "medium",
-                                      "marker-symbol": "circle"
-                                    },
-                              "geometry": {
-                                      "coordinates": [
-                                              103.77196572692446,
-                                              1.345963669080021
-                                            ],
-                                      "type": "Point"
-                                    },
-                              "id": 0
-                            }
-                    ]
-            }
-    </script>
+    <script id="mygeo" src="shellgeo.js"></script>
+    <script src="initmap.js"></script>
     <script>
-      let sw = L.latLng(1.144, 103.535);
-      let ne = L.latLng(1.494, 104.502);
-      let bounds = L.latLngBounds(sw, ne);
-
-
-      let ctr = L.latLng(1.3461151,103.773155);
-      let map = L.map('mapdiv', {
-              center: ctr,
-              zoom: 17
-            });
-
-      map.setMaxBounds(bounds);
-
-      let basemap = L.tileLayer('https://www.onemap.gov.sg/maps/tiles/Default_HD/{z}/{x}/{y}.png', {
-              detectRetina: true,
-              maxZoom: 19,
-              minZoom: 11,
-            });
-
-      basemap.addTo(map);
-      L.marker(ctr)
-        .bindPopup("Lobby B<br>31 Hindhede Walk<br>Southaven 2")
-        .addTo(map)
-      //.openPopup()
-
-      function onMapClick(e) {
-              let mypop=L.popup()
-              mypop
-                .setLatLng(e.latlng)
-                .setContent(`${e.latlng.toString()}`)
-                .openOn(map)
-
-            }
-
-      //map.on("click",onMapClick)
-      let redicon = L.icon({
-              iconUrl: 'redmarker.png',
-              iconSize: [26,41],
-              iconAnchor: [13,40],
-              popupAnchor: [0,-25]
-            })
-
-      function placeRedicon(e) {
-              L.marker(e.latlng,{icon: redicon})
-                .bindPopup(`${e.latlng.toString()}`)
-                .addTo(map)
-            }
-      //map.on("click",placeRedicon)
-
-      L.geoJSON(feat,{
-              pointToLayer: function (feature,latlng){
-                      return L.marker(latlng,{icon:redicon})
-                        .bindPopup(feature.properties.name)
+      var mylayer
+      function render(feat) {
+              if(mylayer) {
+                      map.removeLayer(mylayer)
+                      console.log("mylayer removed")
                     }
-            }).addTo(map)
+              mylayer = L.geoJSON(feat,{
+                      pointToLayer: function (feature,latlng){
+                              return L.marker(latlng,{icon:redicon})
+                                .bindPopup(feature.properties.name)
+                            }
+                    }).addTo(map)
+              console.log("render called")
+            }
+
+      render(feat)
     </script>
 
     {{template "footer.html"}}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"io"
 	"log"
@@ -90,8 +91,7 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 	))
 	var b bytes.Buffer
 	t.Execute(&b, sr)
-	mygeo := `<script id="mygeo">
-      var feat = {
+	newFeat := `{
               "type": "FeatureCollection",
               "features": [
                       {
@@ -110,15 +110,8 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
                             }
                     ]
             }
-    </script>`
-	sse.PatchElements(b.String() + mygeo)
-	//	sse.ExecuteScript(`
-	//      L.geoJSON(feat,{
-	//              pointToLayer: function (feature,latlng){
-	//                      return L.marker(latlng,{icon:redicon})
-	//                        .bindPopup(feature.properties.name)
-	//                    }
-	//            }).addTo(map)`)
-	//	sse.ExecuteScript(`alert('Ger')`)
+`
+	sse.PatchElements(b.String())
+	sse.ExecuteScript(fmt.Sprintf(`render(%s)`, newFeat))
 
 }
