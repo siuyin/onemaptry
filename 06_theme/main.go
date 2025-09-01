@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
-	"onemaptry/auth"
-	"onemaptry/body"
 	"os"
+
+	"github.com/siuyin/onemaptry/auth"
+	"github.com/siuyin/onemaptry/body"
 )
 
 const baseURL = "https://onemap.gov.sg"

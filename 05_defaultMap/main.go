@@ -6,10 +6,13 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/siuyin/dflt"
 	"github.com/siuyin/gmap/lta/bike"
 	"github.com/siuyin/onemaptry/05_defaultMap/public"
+	"github.com/siuyin/onemaptry/srch"
+	"github.com/starfederation/datastar-go/datastar"
 )
 
 var t *template.Template
@@ -25,6 +28,8 @@ func main() {
 	http.HandleFunc("/placepicker", placePickerHandler)
 	http.HandleFunc("/bicyclepark", bicyleParkHandler)
 	http.HandleFunc("/bicycleRacks", bicycleRacksHandler)
+
+	http.HandleFunc("/gerb", gerbHandler)
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
@@ -53,4 +58,39 @@ func bicycleRacksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	io.WriteString(w, bike.ParkingSpots(lat, lng))
+}
+
+type placeInp struct {
+	Search string `json:"search"`
+}
+
+func gerbHandler(w http.ResponseWriter, r *http.Request) {
+	sse := datastar.NewSSE(w, r)
+	pl := placeInp{}
+	datastar.ReadSignals(r, &pl)
+	if len(pl.Search) < 4 {
+		sse.PatchElements(`<div id="results"></div>`)
+		return
+	}
+
+	sr := srch.Location(pl.Search)
+	if sr.Found == 0 {
+		sse.PatchElements(`<div id="results">no results found</div>`)
+		return
+	}
+
+	t := template.Must(template.New("pe").Parse(
+		`<div id="results">
+		{{.Found}} result(s) found. page: {{.PageNum}} of {{.Pages}}
+		<ul>
+		{{range .Results}}
+		  <li>{{.Address}}</li>
+		{{end}}
+		</ul>
+		</div>`,
+	))
+	var b strings.Builder
+	t.Execute(&b, sr)
+	sse.PatchElements(b.String())
+
 }

@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"onemaptry/auth"
+
+	"github.com/siuyin/onemaptry/auth"
 )
 
 func main() {

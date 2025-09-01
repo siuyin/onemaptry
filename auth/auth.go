@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/boltdb/bolt"
 	"github.com/siuyin/dflt"
-	bolt "go.etcd.io/bbolt"
 )
 
 const baseURL = "https://onemap.gov.sg"

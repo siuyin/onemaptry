@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"onemaptry/auth"
-	"onemaptry/body"
 
 	"github.com/siuyin/dflt"
+	"github.com/siuyin/onemaptry/auth"
+	"github.com/siuyin/onemaptry/body"
+	"github.com/siuyin/onemaptry/srch"
 )
 
 const baseURL = "https://onemap.gov.sg"
@@ -30,6 +31,12 @@ type resp struct {
 }
 
 func main() {
+	loc := dflt.EnvString("LOC", "revenue house")
+	r := srch.Location(loc)
+	fmt.Printf("found: %d. page: %d of %d\n", r.Found, r.PageNum, r.Pages)
+	fmt.Printf("%s\n", r.Results)
+}
+func mainOld() {
 	loc := url.QueryEscape(dflt.EnvString("LOC", "revenue house"))
 	dat := auth.RetryOnUnauth(search, loc)
 	fmt.Printf("%s\n", dat)
