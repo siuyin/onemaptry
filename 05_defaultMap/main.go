@@ -30,6 +30,7 @@ func main() {
 	http.HandleFunc("/bicyclepark", bicyleParkHandler)
 	http.HandleFunc("/bicycleRacks", bicycleRacksHandler)
 	http.HandleFunc("/search", placeSearchHandler)
+	http.HandleFunc("/center", centerHandler)
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
@@ -84,7 +85,7 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 		{{.Found}} result(s) found. page: {{.PageNum}} of {{.Pages}}
 		<ul>
 		{{range .Results}}
-		  <li>{{.Address}}</li>
+		  <li><a href="#" data-on-click="@get('/center?lat={{.Lat}}&lng={{.Lng}}&addr={{.Address}}')">{{.Address}}</a></li>
 		{{end}}
 		</ul>
 		</div>`,
@@ -114,4 +115,11 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 	sse.PatchElements(b.String())
 	sse.ExecuteScript(fmt.Sprintf(`render(%s)`, newFeat))
 
+}
+
+func centerHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("%s\n", r.URL)
+	sse := datastar.NewSSE(w, r)
+	sse.ExecuteScript(fmt.Sprintf(`map.setView([%s, %s],18)`, r.FormValue("lat"), r.FormValue("lng")))
+	sse.ExecuteScript(fmt.Sprintf(`L.marker([%s,%s]).bindPopup("%s").addTo(map)`, r.FormValue("lat"), r.FormValue("lng"), r.FormValue("addr")))
 }
