@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/siuyin/dflt"
 	"github.com/siuyin/gmap/lta/bike"
@@ -28,8 +28,7 @@ func main() {
 	http.HandleFunc("/placepicker", placePickerHandler)
 	http.HandleFunc("/bicyclepark", bicyleParkHandler)
 	http.HandleFunc("/bicycleRacks", bicycleRacksHandler)
-
-	http.HandleFunc("/gerb", gerbHandler)
+	http.HandleFunc("/search", placeSearchHandler)
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
@@ -64,7 +63,7 @@ type placeInp struct {
 	Search string `json:"search"`
 }
 
-func gerbHandler(w http.ResponseWriter, r *http.Request) {
+func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 	sse := datastar.NewSSE(w, r)
 	pl := placeInp{}
 	datastar.ReadSignals(r, &pl)
@@ -89,8 +88,37 @@ func gerbHandler(w http.ResponseWriter, r *http.Request) {
 		</ul>
 		</div>`,
 	))
-	var b strings.Builder
+	var b bytes.Buffer
 	t.Execute(&b, sr)
-	sse.PatchElements(b.String())
+	mygeo := `<script id="mygeo">
+      var feat = {
+              "type": "FeatureCollection",
+              "features": [
+                      {
+                              "type": "Feature",
+                              "properties": {
+                                      "name": "Woh Hup",
+                                    },
+                              "geometry": {
+                                      "coordinates": [
+                                              103.77258,
+                                              1.345618
+                                            ],
+                                      "type": "Point"
+                                    },
+                              "id": 0
+                            }
+                    ]
+            }
+    </script>`
+	sse.PatchElements(b.String() + mygeo)
+	//	sse.ExecuteScript(`
+	//      L.geoJSON(feat,{
+	//              pointToLayer: function (feature,latlng){
+	//                      return L.marker(latlng,{icon:redicon})
+	//                        .bindPopup(feature.properties.name)
+	//                    }
+	//            }).addTo(map)`)
+	//	sse.ExecuteScript(`alert('Ger')`)
 
 }

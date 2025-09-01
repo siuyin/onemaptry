@@ -18,12 +18,35 @@
         <input type="text" 
                placeholder="search ..." 
                data-bind-search
-               data-on-input="@get('/gerb')" />
+               data-on-input="@get('/search')" />
         <div id="results"></div>
       </div>
 
     </div>
-
+    <script id="mygeo">
+      var feat = {
+              "type": "FeatureCollection",
+              "features": [
+                      {
+                              "type": "Feature",
+                              "properties": {
+                                      "name": "shell station",
+                                      "marker-color": "#c92222",
+                                      "marker-size": "medium",
+                                      "marker-symbol": "circle"
+                                    },
+                              "geometry": {
+                                      "coordinates": [
+                                              103.77196572692446,
+                                              1.345963669080021
+                                            ],
+                                      "type": "Point"
+                                    },
+                              "id": 0
+                            }
+                    ]
+            }
+    </script>
     <script>
       let sw = L.latLng(1.144, 103.535);
       let ne = L.latLng(1.494, 104.502);
@@ -74,28 +97,6 @@
             }
       //map.on("click",placeRedicon)
 
-      var feat = {
-              "type": "FeatureCollection",
-              "features": [
-                      {
-                              "type": "Feature",
-                              "properties": {
-                                      "name": "shell station",
-                                      "marker-color": "#c92222",
-                                      "marker-size": "medium",
-                                      "marker-symbol": "circle"
-                                    },
-                              "geometry": {
-                                      "coordinates": [
-                                              103.77196572692446,
-                                              1.345963669080021
-                                            ],
-                                      "type": "Point"
-                                    },
-                              "id": 0
-                            }
-                    ]
-            }
       L.geoJSON(feat,{
               pointToLayer: function (feature,latlng){
                       return L.marker(latlng,{icon:redicon})
