@@ -120,6 +120,7 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 func centerHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("%s\n", r.URL)
 	sse := datastar.NewSSE(w, r)
+	sse.ExecuteScript(`map.removeLayer(markers)`)
 	sse.ExecuteScript(fmt.Sprintf(`map.setView([%s, %s],18)`, r.FormValue("lat"), r.FormValue("lng")))
-	sse.ExecuteScript(fmt.Sprintf(`L.marker([%s,%s]).bindPopup("%s").addTo(map)`, r.FormValue("lat"), r.FormValue("lng"), r.FormValue("addr")))
+	sse.ExecuteScript(fmt.Sprintf(`markers.addLayer(L.marker([%s,%s]).bindPopup("%s"));markers.addTo(map)`, r.FormValue("lat"), r.FormValue("lng"), r.FormValue("addr")))
 }

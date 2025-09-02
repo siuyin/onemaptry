@@ -16,12 +16,15 @@ let basemap = L.tileLayer('https://www.onemap.gov.sg/maps/tiles/Default_HD/{z}/{
   maxZoom: 19,
   minZoom: 11,
 });
-
 basemap.addTo(map);
-L.marker(ctr)
+var markers = L.layerGroup()
+
+markers.addLayer( L.marker(ctr)
   .bindPopup("Lobby B<br>31 Hindhede Walk<br>Southaven 2")
-  .addTo(map)
-//.openPopup()
+  //.addTo(map)
+  //.openPopup()
+)
+
 
 function onMapClick(e) {
   let mypop=L.popup()
@@ -46,3 +49,5 @@ function placeRedicon(e) {
     .addTo(map)
 }
 //map.on("click",placeRedicon)
+
+markers.addTo(map)
