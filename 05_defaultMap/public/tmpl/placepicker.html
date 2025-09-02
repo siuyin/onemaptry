@@ -31,7 +31,6 @@
       function render(feat) {
               if(mylayer) {
                       map.removeLayer(mylayer)
-                      console.log("mylayer removed")
                     }
               mylayer = L.geoJSON(feat,{
                       pointToLayer: function (feature,latlng){
@@ -39,7 +38,6 @@
                                 .bindPopup(feature.properties.name)
                             }
                     }).addTo(map)
-              console.log("render called")
             }
 
       render(feat)

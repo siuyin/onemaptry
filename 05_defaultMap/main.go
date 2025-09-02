@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
@@ -21,7 +22,8 @@ var t *template.Template
 func main() {
 	port := dflt.EnvString("PORT", "8080")
 	log.Printf("PORT=%s", port)
-	t = template.Must(template.ParseFS(public.Content, "tmpl/*"))
+	t = template.New("mytpl").Funcs(template.FuncMap{"json": jsonify})
+	t = template.Must(t.ParseFS(public.Content, "tmpl/*"))
 
 	http.Handle("/{$}", http.HandlerFunc(indexHandler))
 	//http.Handle("/", http.FileServer(http.Dir("./public")))
@@ -80,18 +82,19 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := template.Must(template.New("pe").Parse(
+	tm := template.New("pe").Funcs(template.FuncMap{"json": jsonify})
+	tm = template.Must(tm.Parse(
 		`<div id="results">
 		{{.Found}} result(s) found. page: {{.PageNum}} of {{.Pages}}
 		<ul>
 		{{range .Results}}
-		  <li><a href="#" data-on-click="@get('/center?lat={{.Lat}}&lng={{.Lng}}&addr={{.Address}}')">{{.Address}}</a></li>
+		  <li><a href="#" data-on-click="@get('/center?lat={{.Lat}}&lng={{.Lng}}&addr={{.Address}}&selected={{json .}}')">{{.Address}}</a></li>
 		{{end}}
 		</ul>
 		</div>`,
 	))
 	var b bytes.Buffer
-	t.Execute(&b, sr)
+	tm.Execute(&b, sr)
 	newFeat := `{
               "type": "FeatureCollection",
               "features": [
@@ -118,9 +121,22 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func centerHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("%s\n", r.URL)
+	fmt.Printf("%s\n", r.FormValue("selected"))
+	var s srch.Result
+	if err := json.Unmarshal([]byte(r.FormValue("selected")), &s); err != nil {
+		log.Println("unmarshal: ", err)
+	}
+
 	sse := datastar.NewSSE(w, r)
 	sse.ExecuteScript(`markers.clearLayers()`)
 	sse.ExecuteScript(fmt.Sprintf(`map.setView([%s, %s],18)`, r.FormValue("lat"), r.FormValue("lng")))
-	sse.ExecuteScript(fmt.Sprintf(`markers.addLayer(L.marker([%s,%s]).bindPopup("%s"));markers.addTo(map)`, r.FormValue("lat"), r.FormValue("lng"), r.FormValue("addr")))
+	sse.ExecuteScript(fmt.Sprintf(`markers.addLayer(L.marker([%s,%s]).bindPopup("%s"));markers.addTo(map)`, s.Lat, s.Lng, s.Address))
+}
+
+func jsonify(v any) (template.JS, error) {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return "", err
+	}
+	return template.JS(data), nil
 }
