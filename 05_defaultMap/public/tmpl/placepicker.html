@@ -28,6 +28,10 @@
     <script src="initmap.js"></script>
     <script>
       var mylayer
+      function fmtBikeProps(props) {
+              return props.Description+'<br>'+
+                props.RackType+','+props.RackCount+','+props.ShelterIndicator
+            }
       function render(feat) {
               if(mylayer) {
                       map.removeLayer(mylayer)
@@ -35,7 +39,7 @@
               mylayer = L.geoJSON(feat,{
                       pointToLayer: function (feature,latlng){
                               return L.marker(latlng,{icon:redicon})
-                                .bindPopup(feature.properties.name)
+                                .bindPopup(fmtBikeProps(feature.properties))
                             }
                     }).addTo(map)
             }

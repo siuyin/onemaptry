@@ -85,12 +85,12 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 	tm := template.New("pe").Funcs(template.FuncMap{"json": jsonify})
 	tm = template.Must(tm.Parse(
 		`<div id="results">
-		{{.Found}} result(s) found. page: {{.PageNum}} of {{.Pages}}
-		<ul>
-		{{range .Results}}
-		  <li><a href="#" data-on-click="@get('/center?selected={{json .}}')">{{.Address}}</a></li>
-		{{end}}
-		</ul>
+		  {{.Found}} result(s) found. page: {{.PageNum}} of {{.Pages}}
+		  <ul>
+		    {{range .Results}}
+		      <li><a href="#" data-on-click="@get('/center?selected={{json .}}')">{{.Address}}</a></li>
+		    {{end}}
+		  </ul>
 		</div>`,
 	))
 	var b bytes.Buffer
@@ -121,16 +121,36 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func centerHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("%s\n", r.FormValue("selected"))
-	var s srch.Result
-	if err := json.Unmarshal([]byte(r.FormValue("selected")), &s); err != nil {
-		log.Println("unmarshal: ", err)
-	}
+	log.Printf("%s\n", r.FormValue("selected"))
+	s := selectedSearchResult(r)
 
 	sse := datastar.NewSSE(w, r)
 	sse.ExecuteScript(`markers.clearLayers()`)
 	sse.ExecuteScript(fmt.Sprintf(`map.setView([%s, %s],18)`, s.Lat, s.Lng))
-	sse.ExecuteScript(fmt.Sprintf(`markers.addLayer(L.marker([%s,%s]).bindPopup("%s"));markers.addTo(map)`, s.Lat, s.Lng, s.Address))
+	sse.ExecuteScript(fmt.Sprintf(`markers.addLayer(L.marker([%s,%s]).bindPopup("%s"))`, s.Lat, s.Lng, s.Address))
+	sse.ExecuteScript(fmt.Sprintf(`render(%s)`, bikeRacks(s.Lat, s.Lng)))
+}
+
+func bikeRacks(latitude, longitude string) string {
+	lat, err := strconv.ParseFloat(latitude, 64)
+	if err != nil {
+		log.Printf("parse float: %s: %v", latitude, err)
+	}
+
+	lng, err := strconv.ParseFloat(longitude, 64)
+	if err != nil {
+		log.Printf("parse float: %s: %v", longitude, err)
+	}
+
+	return bike.ParkingSpots(lat, lng)
+}
+
+func selectedSearchResult(r *http.Request) *srch.Result {
+	var s srch.Result
+	if err := json.Unmarshal([]byte(r.FormValue("selected")), &s); err != nil {
+		log.Printf("unmarshal: %s", r.FormValue("selected"), err)
+	}
+	return &s
 }
 
 func jsonify(v any) (template.JS, error) {
