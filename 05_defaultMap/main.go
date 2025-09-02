@@ -88,7 +88,7 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 		{{.Found}} result(s) found. page: {{.PageNum}} of {{.Pages}}
 		<ul>
 		{{range .Results}}
-		  <li><a href="#" data-on-click="@get('/center?lat={{.Lat}}&lng={{.Lng}}&addr={{.Address}}&selected={{json .}}')">{{.Address}}</a></li>
+		  <li><a href="#" data-on-click="@get('/center?selected={{json .}}')">{{.Address}}</a></li>
 		{{end}}
 		</ul>
 		</div>`,
@@ -129,7 +129,7 @@ func centerHandler(w http.ResponseWriter, r *http.Request) {
 
 	sse := datastar.NewSSE(w, r)
 	sse.ExecuteScript(`markers.clearLayers()`)
-	sse.ExecuteScript(fmt.Sprintf(`map.setView([%s, %s],18)`, r.FormValue("lat"), r.FormValue("lng")))
+	sse.ExecuteScript(fmt.Sprintf(`map.setView([%s, %s],18)`, s.Lat, s.Lng))
 	sse.ExecuteScript(fmt.Sprintf(`markers.addLayer(L.marker([%s,%s]).bindPopup("%s"));markers.addTo(map)`, s.Lat, s.Lng, s.Address))
 }
 
