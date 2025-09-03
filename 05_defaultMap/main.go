@@ -156,7 +156,7 @@ func selectedSearchResult(r *http.Request) *srch.Result {
 func jsonify(v any) (template.JS, error) {
 	data, err := json.Marshal(v)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("jsonify: %v", err)
 	}
 	return template.JS(data), nil
 }
