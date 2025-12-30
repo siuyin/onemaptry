@@ -95,7 +95,9 @@ func Get(url string) (*http.Response, error) {
 var db *bolt.DB
 
 func init() {
-	initDB("db.secret")
+	secDB := dflt.EnvString("SECRETS_DB", "/tmp/onemap.db.secret")
+	initDB(secDB)
+	log.Printf("auth package SECRETS_DB=%s", secDB)
 }
 
 func initDB(path string) {

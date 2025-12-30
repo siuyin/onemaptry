@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Build-and-Deploy:
+  Build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository code
@@ -32,3 +32,18 @@ jobs:
       - name: Verify executable size
         run: |
           ls -lh ./bicyclesearch
+
+  Deploy:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH keys
+        run: |
+          mkdir -p .ssh
+          echo "${{ secrets.RASPKEY }}" > .ssh/id_ed25519
+      - name: scp binary to rasp
+        run: |
+          scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -P 22322 ./bicyclesearch siuyin@rasp.beyondbroadcast.com:
+      - name: Verify copy
+        run: |
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -p 22322 siuyin@rasp.beyondbroadcast.com ls -lh bicyclesearch
