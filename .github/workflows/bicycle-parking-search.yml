@@ -1,0 +1,13 @@
+name: Onemap Bicycle Parking Search
+run-name: ${{ github.actor }} is running this action.
+on: [push]
+jobs:
+  Explore-Github-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v5
+
+      - name: List files
+        run: |
+          ls -lR ${{ github.workspace }}
