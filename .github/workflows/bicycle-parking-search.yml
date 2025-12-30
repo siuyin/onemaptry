@@ -55,7 +55,7 @@ jobs:
           chmod 600 .ssh/id_ed25519
       - name: Verify SSH key present
         run: |
-          ls -al .ssh
+          ls -al /home/runner/.ssh
       - name: Verify SSH connectivity
         run: |
           ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22322 -v siuyin@rasp.beyondbroadcast.com ls -al
