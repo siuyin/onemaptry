@@ -70,3 +70,10 @@ jobs:
       - name: Verify copy
         run: |
           ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -p 22322 siuyin@rasp.beyondbroadcast.com ls -lh bicyclesearch
+      - name: Make executable
+        run: |
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -p 22322 siuyin@rasp.beyondbroadcast.com chmod +x bicyclesearch
+      - name: Install executable
+        run: |
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -p 22322 siuyin@rasp.beyondbroadcast.com sudo mv bicyclesearch /usr/local/bin
+

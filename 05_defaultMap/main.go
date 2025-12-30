@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -23,6 +24,7 @@ var t *template.Template
 func main() {
 	port := dflt.EnvString("PORT", "8080")
 	log.Printf("PORT=%s", port)
+	log.Printf("HTTP_PREFIX=%q", os.Getenv("HTTP_PREFIX"))
 	t = template.New("mytpl").Funcs(template.FuncMap{"json": jsonify})
 	t = template.Must(t.ParseFS(public.Content, "tmpl/*"))
 
@@ -44,7 +46,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func placePickerHandler(w http.ResponseWriter, r *http.Request) {
-	t.ExecuteTemplate(w, "placepicker.html", struct{ CopyrightYear string }{CopyrightYear: time.Now().Format("2006")})
+	t.ExecuteTemplate(w, "placepicker.html", struct {
+		CopyrightYear string
+		Prefix        string
+	}{
+		CopyrightYear: time.Now().Format("2006"),
+		Prefix:        dflt.EnvString("HTTP_PREFIX", ""), // eg. /omap
+	})
 }
 
 func bicyleParkHandler(w http.ResponseWriter, r *http.Request) {

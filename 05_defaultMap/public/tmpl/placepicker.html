@@ -19,7 +19,7 @@
                name="searchInput"
                placeholder="search ..." 
                data-bind:search
-               data-on:input="@get('/search')" />
+               data-on:input="@get('{{.Prefix}}/search')" />
         <div id="results"></div>
       </div>
 
