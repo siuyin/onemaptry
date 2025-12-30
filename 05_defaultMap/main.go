@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/siuyin/dflt"
 	"github.com/siuyin/gmap/lta/bike"
@@ -25,7 +26,8 @@ func main() {
 	t = template.New("mytpl").Funcs(template.FuncMap{"json": jsonify})
 	t = template.Must(t.ParseFS(public.Content, "tmpl/*"))
 
-	http.Handle("/{$}", http.HandlerFunc(indexHandler))
+	//http.Handle("/{$}", http.HandlerFunc(indexHandler))
+	http.Handle("/{$}", http.HandlerFunc(placePickerHandler))
 	//http.Handle("/", http.FileServer(http.Dir("./public")))
 	http.Handle("/", http.FileServer(http.FS(public.Content)))
 	http.HandleFunc("/placepicker", placePickerHandler)
@@ -42,7 +44,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func placePickerHandler(w http.ResponseWriter, r *http.Request) {
-	t.ExecuteTemplate(w, "placepicker.html", nil)
+	t.ExecuteTemplate(w, "placepicker.html", struct{ CopyrightYear string }{CopyrightYear: time.Now().Format("2006")})
 }
 
 func bicyleParkHandler(w http.ResponseWriter, r *http.Request) {
