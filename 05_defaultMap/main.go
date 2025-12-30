@@ -150,7 +150,7 @@ func bikeRacks(latitude, longitude string) string {
 func selectedSearchResult(r *http.Request) *srch.Result {
 	var s srch.Result
 	if err := json.Unmarshal([]byte(r.FormValue("selected")), &s); err != nil {
-		log.Printf("unmarshal: %s", r.FormValue("selected"), err)
+		log.Printf("unmarshal: %s: %v", r.FormValue("selected"), err)
 	}
 	return &s
 }

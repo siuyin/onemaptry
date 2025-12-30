@@ -1,8 +1,11 @@
 name: Onemap Bicycle Parking Search
 run-name: ${{ github.actor }} deploying Onemap Bicycle Parking Search.
-on: [push]
+on:
+  push:
+  workflow_dispatch:
+
 jobs:
-  Explore-Github-Actions:
+  Build-and-Deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository code
@@ -11,3 +14,10 @@ jobs:
       - name: List files
         run: |
           ls -lR ${{ github.workspace }}
+
+      - name: Verify Go
+        run: |
+          go version
+          go mod tidy
+          go test ./...
+
