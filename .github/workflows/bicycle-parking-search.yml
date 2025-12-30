@@ -33,6 +33,13 @@ jobs:
         run: |
           ls -lh ./bicyclesearch
 
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 1
+          name: bicyclesearch-arm
+          path: bicyclesearch
+
   Deploy:
     needs: Build
     runs-on: ubuntu-latest
@@ -41,6 +48,11 @@ jobs:
         run: |
           mkdir -p .ssh
           echo "${{ secrets.RASPKEY }}" > .ssh/id_ed25519
+      - name: Download executable
+        uses: actions/download-artifact@v4
+        with:
+          name: bicyclesearch-arm
+          path: bicyclesearch
       - name: scp binary to rasp
         run: |
           scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -P 22322 ./bicyclesearch siuyin@rasp.beyondbroadcast.com:
