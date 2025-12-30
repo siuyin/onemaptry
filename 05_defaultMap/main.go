@@ -92,17 +92,18 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tm := template.New("pe").Funcs(template.FuncMap{"json": jsonify})
-	tm = template.Must(tm.Parse(
-		`<div id="results">
+	cont := `<div id="results">
 		  {{.Found}} result(s) found. page: {{.PageNum}} of {{.Pages}}
 		  <ul>
 		    {{range .Results}}
-		      <li><a href="#" data-on:click="@get('/center?selected={{json .}}')">{{.Address}}</a></li>
+		      <li><a href="#" data-on:click="@get('%s/center?selected={{json .}}')">{{.Address}}</a></li>
 		    {{end}}
 		  </ul>
-		</div>`,
-	))
+		</div>`
+	prefix := dflt.EnvString("HTTP_PREFIX", "")
+	tm := template.New("pe").Funcs(template.FuncMap{"json": jsonify})
+
+	tm = template.Must(tm.Parse(fmt.Sprintf(cont, prefix)))
 	var b bytes.Buffer
 	tm.Execute(&b, sr)
 	newFeat := `{
