@@ -88,7 +88,7 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 		  {{.Found}} result(s) found. page: {{.PageNum}} of {{.Pages}}
 		  <ul>
 		    {{range .Results}}
-		      <li><a href="#" data-on-click="@get('/center?selected={{json .}}')">{{.Address}}</a></li>
+		      <li><a href="#" data-on:click="@get('/center?selected={{json .}}')">{{.Address}}</a></li>
 		    {{end}}
 		  </ul>
 		</div>`,

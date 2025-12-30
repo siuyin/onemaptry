@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://www.onemap.gov.sg/web-assets/libs/leaflet/leaflet.css" />
     <script src="https://www.onemap.gov.sg/web-assets/libs/leaflet/onemap-leaflet.js"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@main/bundles/datastar.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.7/bundles/datastar.js"></script>
   </head>
 
   <body>
@@ -18,8 +18,8 @@
         <input type="text" 
                name="searchInput"
                placeholder="search ..." 
-               data-bind-search
-               data-on-input="@get('/search')" />
+               data-bind:search
+               data-on:input="@get('/search')" />
         <div id="results"></div>
       </div>
 
