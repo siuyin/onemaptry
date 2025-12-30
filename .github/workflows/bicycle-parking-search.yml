@@ -65,7 +65,7 @@ jobs:
           ls -lh /home/runner
       - name: scp binary to rasp
         run: |
-          scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -P 22322 /home/runner/bicyclesearch siuyin@rasp.beyondbroadcast.com:bicyclesearch
+          scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -P 22322 ./bicyclesearch/bicyclesearch-arm siuyin@rasp.beyondbroadcast.com:bicyclesearch
       - name: Verify copy
         run: |
           ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -p 22322 siuyin@rasp.beyondbroadcast.com ls -lh bicyclesearch
