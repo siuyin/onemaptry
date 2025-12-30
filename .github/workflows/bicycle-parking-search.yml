@@ -21,3 +21,8 @@ jobs:
           go mod tidy
           go test ./...
 
+      - name: Build for ARMv6 Raspberry Pi
+        run: |
+          GOOS=linux GOARCH=arm GOARM=6 go build -o bicyclesearch ./05_defaultMap/
+          file ./bicyclesearch
+          ls -lh ./bicyclesearch
