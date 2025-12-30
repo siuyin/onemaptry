@@ -1,5 +1,5 @@
 name: Onemap Bicycle Parking Search
-run-name: ${{ github.actor }} is running this action.
+run-name: ${{ github.actor }} deploying Onemap Bicycle Parking Search.
 on: [push]
 jobs:
   Explore-Github-Actions:
