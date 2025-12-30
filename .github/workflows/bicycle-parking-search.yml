@@ -60,13 +60,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: bicyclesearch-arm
-          path: /home/runner/bicyclesearch
+          path: /tmp/bicyclesearch
       - name: Verify download
         run: |
-          ls -lh /home/runner/bicyclesearch
+          ls -lh /tmp/bicyclesearch
       - name: scp binary to rasp
         run: |
-          scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -P 22322 ./bicyclesearch/bicyclesearch siuyin@rasp.beyondbroadcast.com:bicyclesearch
+          scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -P 22322 /tmp/bicyclesearch/bicyclesearch siuyin@rasp.beyondbroadcast.com:bicyclesearch
       - name: Verify copy
         run: |
           ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  -p 22322 siuyin@rasp.beyondbroadcast.com ls -lh bicyclesearch
