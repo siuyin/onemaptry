@@ -59,7 +59,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: bicyclesearch-arm
-          path: bicyclesearch
+          path: ./bicyclesearch
       - name: scp binary to rasp
         run: |
           scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -P 22322 ./bicyclesearch siuyin@rasp.beyondbroadcast.com:
