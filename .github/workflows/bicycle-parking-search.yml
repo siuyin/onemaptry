@@ -24,5 +24,11 @@ jobs:
       - name: Build for ARMv6 Raspberry Pi
         run: |
           GOOS=linux GOARCH=arm GOARM=6 go build -o bicyclesearch ./05_defaultMap/
-          file ./bicyclesearch
-          ls -lh ./bicyclesearch
+
+      - name: Verify executable type
+          run: |
+            file ./bicyclesearch
+
+      - name: Verify executable size
+          run: |
+            ls -lh ./bicyclesearch
