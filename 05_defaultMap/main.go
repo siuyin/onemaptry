@@ -8,7 +8,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
@@ -24,7 +23,6 @@ var t *template.Template
 func main() {
 	port := dflt.EnvString("PORT", "8080")
 	log.Printf("PORT=%s", port)
-	log.Printf("HTTP_PREFIX=%q", os.Getenv("HTTP_PREFIX"))
 	t = template.New("mytpl").Funcs(template.FuncMap{"json": jsonify})
 	t = template.Must(t.ParseFS(public.Content, "tmpl/*"))
 
@@ -51,7 +49,6 @@ func placePickerHandler(w http.ResponseWriter, r *http.Request) {
 		Prefix        string
 	}{
 		CopyrightYear: time.Now().Format("2006"),
-		Prefix:        dflt.EnvString("HTTP_PREFIX", ""), // eg. /omap
 	})
 }
 
@@ -96,14 +93,13 @@ func placeSearchHandler(w http.ResponseWriter, r *http.Request) {
 		  {{.Found}} result(s) found. page: {{.PageNum}} of {{.Pages}}
 		  <ul>
 		    {{range .Results}}
-		      <li><a href="#" data-on:click="@get('%s/center?selected={{json .}}')">{{.Address}}</a></li>
+		      <li><a href="#" data-on:click="@get('./center?selected={{json .}}')">{{.Address}}</a></li>
 		    {{end}}
 		  </ul>
 		</div>`
-	prefix := dflt.EnvString("HTTP_PREFIX", "")
 	tm := template.New("pe").Funcs(template.FuncMap{"json": jsonify})
 
-	tm = template.Must(tm.Parse(fmt.Sprintf(cont, prefix)))
+	tm = template.Must(tm.Parse(cont))
 	var b bytes.Buffer
 	tm.Execute(&b, sr)
 	newFeat := `{
