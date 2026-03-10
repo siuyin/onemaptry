@@ -28,20 +28,20 @@
     <script>
       var mylayer
       function fmtBikeProps(props) {
-              return props.Description+'<br>'+
-                props.RackType+','+props.RackCount+','+props.ShelterIndicator
-            }
+        return props.Description+'<br>'+
+          props.RackType+','+props.RackCount+','+props.ShelterIndicator
+      }
       function render(feat) {
-              if(mylayer) {
-                      map.removeLayer(mylayer)
-                    }
-              mylayer = L.geoJSON(feat,{
-                      pointToLayer: function (feature,latlng){
-                              return L.marker(latlng,{icon:redicon})
-                                .bindPopup(fmtBikeProps(feature.properties))
-                            }
-                    }).addTo(map)
-            }
+        if(mylayer) {
+          map.removeLayer(mylayer)
+        }
+        mylayer = L.geoJSON(feat,{
+          pointToLayer: function (feature,latlng){
+            return L.marker(latlng,{icon:redicon})
+              .bindPopup(fmtBikeProps(feature.properties))
+          }
+        }).addTo(map)
+      }
 
     </script>
 
